@@ -139,3 +139,9 @@ if not _try_to_fork or (_try_to_fork and os.fork() == 0):
     # PATCH-SETUP-TRANSPORTS #
     met.run()
 ```
+
+The checksum of the URI path is 98, which maps to `URI_CHECKSUM_CONN` (existing session):
+```
+$ python -c "print(reduce(lambda a, b: a+b, [ord(c) for c in 'vZTmXAyyDvpdfEhoAzQRWQuHfGijteWN8k9UD']) % 256)"
+98
+```
