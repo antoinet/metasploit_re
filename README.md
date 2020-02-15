@@ -9,6 +9,28 @@ For more information on payloads and payload stages, see:
  * https://metasploit.help.rapid7.com/docs/working-with-payloads
  * https://blog.cobaltstrike.com/2012/09/13/a-loader-for-metasploits-meterpreter/
 
+The payload descriptions in this repository are arrenged according to the
+metasploit naming convention:
+
+> If you look at Metasploit’s payload list, you will also notice that some
+> payloads actually have the exact same name, but in different formats. For
+> example: windows/shell/reverse_tcp and windows/shell_reverse_tcp. The one with
+> the forward slash indicates that is a “staged” payload, the one with the
+> underscore means it’s “single”.
+
+## Single Payloads
+ * [python/meterpreter_bind_tcp](../blob/master/python/meterpreter_bind_tcp)
+ * [python/meterpreter_reverse_tcp](../blob/master/python/meterpreter_reverse_tcp)
+ * [python/shell_bind_tcp](../blob/master/python/shell_bind_tcp)
+ * [python/shell_reverse_tcp](../blob/master/python/shell_reverse_tcp)
+
+## Staged payloads
+ * [linux_x86/shell/bind_tcp](../blob/master/linux_x86/shell/bind_tcp)
+ * [python/meterpreter/bind_tcp](../blob/master/python/meterpreter/bind_tcp)
+ * [python/meterpreter/reverse_tcp](../blob/master/python/meterpreter/reverse_tcp)
+ * [python/shell/bind_tcp](../blob/master/python/shell/bind_tcp)
+ * [python/shell/reverse_tcp](../blob/master/python/shell/reverse_tcp)
+
 ## Using Docker with debugging capabilities for 32bit Linux payloads
 
 In order to analyse and debug 32bit linux payloads in a Docker container, the
