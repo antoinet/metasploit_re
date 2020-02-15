@@ -9,7 +9,7 @@ For more information on payloads and payload stages, see:
  * https://metasploit.help.rapid7.com/docs/working-with-payloads
  * https://blog.cobaltstrike.com/2012/09/13/a-loader-for-metasploits-meterpreter/
 
-The payload descriptions in this repository are arrenged according to the
+The payload descriptions in this repository are arranged according to the
 metasploit naming convention:
 
 > If you look at Metasploit’s payload list, you will also notice that some
@@ -27,6 +27,7 @@ metasploit naming convention:
 ## Staged payloads
  * [linux_x86/shell/bind_tcp](../master/linux_x86/shell/bind_tcp)
  * [python/meterpreter/bind_tcp](../master/python/meterpreter/bind_tcp)
+ * [python/meterpreter/reverse_http](../master/python/meterpreter/reverse_http)
  * [python/meterpreter/reverse_tcp](../master/python/meterpreter/reverse_tcp)
  * [python/shell/bind_tcp](../master/python/shell/bind_tcp)
  * [python/shell/reverse_tcp](../master/python/shell/reverse_tcp)

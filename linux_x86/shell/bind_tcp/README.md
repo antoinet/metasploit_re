@@ -5,7 +5,7 @@ Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/
 
 ### Generate
 ```
-msf5 > use payload/linux/x86/shell/bind_tcp
+msf5 > use linux/x86/shell/bind_tcp
 msf5 payload(linux/x86/shell/bind_tcp) > generate -f raw -o stager.bin
 ```
 

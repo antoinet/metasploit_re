@@ -1,12 +1,10 @@
-# Metasploit python shell_bind_tcp (single payload)
-
-## Single payload
+# python/shell_bind_tcp (single payload)
 
 Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/payload/python/bind_tcp.rb
 
 ### Generate
 ```
-msf5 > use payload/python/shell_bind_tcp
+msf5 > use python/shell_bind_tcp
 msf5 payload(python/shell_bind_tcp) > generate -f raw -o single.py
 ```
 
