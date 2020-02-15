@@ -180,8 +180,6 @@ $ r2 -a x86 -b 32 -c 'pd' payload.bin
 
 ```
 
-
-
 ## References
  * [Linux syscall table](http://syscalls.kernelgrok.com/)
  * [mprotect(2)](http://man7.org/linux/man-pages/man2/mprotect.2.html)
