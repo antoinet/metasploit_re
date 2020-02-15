@@ -19,17 +19,17 @@ metasploit naming convention:
 > underscore means it’s “single”.
 
 ## Single Payloads
- * [python/meterpreter_bind_tcp](../blob/master/python/meterpreter_bind_tcp)
- * [python/meterpreter_reverse_tcp](../blob/master/python/meterpreter_reverse_tcp)
- * [python/shell_bind_tcp](../blob/master/python/shell_bind_tcp)
- * [python/shell_reverse_tcp](../blob/master/python/shell_reverse_tcp)
+ * [python/meterpreter_bind_tcp](../master/python/meterpreter_bind_tcp)
+ * [python/meterpreter_reverse_tcp](../master/python/meterpreter_reverse_tcp)
+ * [python/shell_bind_tcp](../master/python/shell_bind_tcp)
+ * [python/shell_reverse_tcp](../master/python/shell_reverse_tcp)
 
 ## Staged payloads
- * [linux_x86/shell/bind_tcp](../blob/master/linux_x86/shell/bind_tcp)
- * [python/meterpreter/bind_tcp](../blob/master/python/meterpreter/bind_tcp)
- * [python/meterpreter/reverse_tcp](../blob/master/python/meterpreter/reverse_tcp)
- * [python/shell/bind_tcp](../blob/master/python/shell/bind_tcp)
- * [python/shell/reverse_tcp](../blob/master/python/shell/reverse_tcp)
+ * [linux_x86/shell/bind_tcp](../master/linux_x86/shell/bind_tcp)
+ * [python/meterpreter/bind_tcp](../master/python/meterpreter/bind_tcp)
+ * [python/meterpreter/reverse_tcp](../master/python/meterpreter/reverse_tcp)
+ * [python/shell/bind_tcp](../master/python/shell/bind_tcp)
+ * [python/shell/reverse_tcp](../master/python/shell/reverse_tcp)
 
 ## Using Docker with debugging capabilities for 32bit Linux payloads
 
