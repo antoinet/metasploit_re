@@ -1,7 +1,6 @@
 # Metasploit linux/x86/shell/bind_tcp (staged payload)
 
-## Stager
-
+## Stager
 Source: https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/payload/linux/bind_tcp.rb
 
 ### Generate
@@ -125,14 +124,6 @@ int main(int argc, char* argv[]) {
 
         return 0;
 }
-```
-
-```
-# mkdir /tmp/shared
-# docker run -it --rm --name deleteme -v /tmp/shared:/shared --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -p2000:2000 ubuntu
-root@51d604030a59:/# apt install -y build-essential libc6-i386 gcc-multilib
-root@51d604030a59:/# gcc -m32 test.c -o test
-root@51d604030a59:/# setarch `uname -m` -R /shared/test
 ```
 
 ## Payload
